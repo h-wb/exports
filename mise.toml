@@ -1,0 +1,23 @@
+[tools]
+# Ensure uv is available (latest release)
+uv = "latest"
+python = "3.13.7"  # or whatever version you want for the workspace
+
+[tasks]
+
+# Install all workspace deps
+sync = "uv sync"
+
+# Run tests across the whole workspace
+test = "uv run pytest"
+
+
+
+# Drop into a Python shell with workspace env
+shell = "uv run python"
+
+# Format code (assuming black installed in deps or globally)
+fmt = "uv run black ."
+
+# Type checking (if you add mypy to dev deps)
+typecheck = "uv run mypy ."
