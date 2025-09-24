@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - beta
+
+permissions:
+  contents: write
+
+jobs:
+  release-lastfm:
+    uses: ./.github/workflows/release-package.yaml
+    with:
+      package: lastfm
+
+  release-trakt:
+    uses: ./.github/workflows/release-package.yaml
+    with:
+      package: trakt
+
+  release-root:
+    runs-on: ubuntu-latest
+    needs: [release-lastfm, release-trakt]
+    concurrency:
+      group: ${{ github.workflow }}-release-root-${{ github.ref_name }}
+      cancel-in-progress: false
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Setup | Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup | Sync with upstream branch
+        run: |
+          git fetch origin ${{ github.ref_name }}
+          git reset --hard origin/${{ github.ref_name }}
+
+      - name: Action | Semantic Version Release (Root package)
+        id: release_root
+        uses: python-semantic-release/python-semantic-release@v9.21.0
+        with:
+          directory: ./
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_name: "github-actions"
+          git_committer_email: "actions@users.noreply.github.com"

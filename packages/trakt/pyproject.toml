@@ -30,3 +30,12 @@ version_toml = ["pyproject.toml:project.version"]
 [tool.semantic_release.commit_parser_options]
 path_filters = ["."]
 scope_prefix = "trakt-"
+
+[tool.semantic_release.branches.main]
+match = "main"
+prerelease = false
+
+[tool.semantic_release.branches.beta]
+match = "beta"
+prerelease = true
+prerelease_token = "beta"
